@@ -75,7 +75,7 @@ os.environ["L5KIT_DATA_FOLDER"] = "data"
 cfg = load_config_data("examples/visualisation/visualisation_config.yaml")
 print(cfg)
 
-#Loading sample data for EDA
+# Loading sample data for EDA
 # set env variable for data
 
 dm = LocalDataManager()
@@ -176,9 +176,9 @@ for i, key in enumerate(rasterizer_type_list):
     dataset_dict[key] = EgoDataset(cfg, zarr_dataset, rasterizer_dict[key])
 
 
-#default lane color is "light yellow" (255, 217, 82).
-#green, yellow, red color on lane is to show trafic light condition.
-#orange box represents crosswalk
+# default lane color is "light yellow" (255, 217, 82).
+# green, yellow, red color on lane is to show trafic light condition.
+# orange box represents crosswalk
 
 fig, axes = plt.subplots(2, 3, figsize=(15, 10))
 axes = axes.flatten()
