@@ -3,7 +3,7 @@
 """
 Created on Mon Sep 21 20:24:16 2020
 
-@author: hossam
+@author: Hossameldin Mohammed & Mohamed Kamel
 """
 import matplotlib.pyplot as plt
 from matplotlib import animation, rc
@@ -11,22 +11,24 @@ rc('animation', html='jshtml')
 from IPython.display import HTML
 #from IPython.display import display, clear_output
 import PIL
-
+import zarr
+from pathlib import Path
 import numpy as np
 import pandas as pd
-import scipy as sp
-
-
+pd.set_option('display.max_columns', None)
+#import scipy as sp
+import itertools as it
+import seaborn as sns
 from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset, AgentDataset
 from l5kit.rasterization import build_rasterizer
 from l5kit.configs import load_config_data
 from l5kit.visualization import draw_trajectory, TARGET_POINTS_COLOR
 from l5kit.geometry import transform_points
-from tqdm import tqdm
-from collections import Counter
+#from tqdm import tqdm
+#from collections import Counter
 from l5kit.data import PERCEPTION_LABELS
-from prettytable import PrettyTable
+#from prettytable import PrettyTable
 
 from IPython.display import display, clear_output
 
@@ -86,24 +88,11 @@ print(zarr_dataset)
 
 
 
+
 frames = zarr_dataset.frames
 agents = zarr_dataset.agents
 scenes = zarr_dataset.scenes
 # tl_faces = zarr_dataset.tl_faces
-
-
-
-
-# set env variable for data
-os.environ["L5KIT_DATA_FOLDER"] = "data"
-# get config
-cfg = load_config_data("examples/visualisation/visualisation_config.yaml")
-print(cfg)
-
-
-
-
-
 
 
 # Visualization Functions
@@ -194,5 +183,143 @@ SceneIndex = 10
 print("scene_idx", SceneIndex)
 anim = create_animate_for_scene(dataset, SceneIndex)
 display(HTML(anim.to_jshtml()))
+
+
+# Agents EDA
+
+agent = agents[0]
+PERCEPTION_LABELS = [
+    "NOT_SET",
+    "UNKNOWN",
+    "DONTCARE",
+    "CAR",
+    "VAN",
+    "TRAM",
+    "BUS",
+    "TRUCK",
+    "EMERGENCY_VEHICLE",
+    "OTHER_VEHICLE",
+    "BICYCLE",
+    "MOTORCYCLE",
+    "CYCLIST",
+    "MOTORCYCLIST",
+    "PEDESTRIAN",
+    "ANIMAL",
+    "DONTCARE",
+]
+DATA_ROOT = Path("C:/Users/Omar/Documents/GitHub/Kaggle-Lyft/data")
+#A robust and fast interface to load l5kit data into  Pandas dataframes
+class BaseParser:
+
+    field = "scenes"
+    dtypes = {}
+
+    def __init__(self, start=0, end=None, chunk_size=1000, max_chunks=1000, root=DATA_ROOT,
+                 zarr_path="scenes/sample.zarr"):
+
+        self.start = start
+        self.end = end
+        self.chunk_size = chunk_size
+        self.max_chunks = max_chunks
+
+        self.root = Path(root)
+        assert self.root.exists(), "There is nothing at {}!".format(self.root)
+        self.zarr_path = Path(zarr_path)
+
+    def parse(self):
+        raise NotImplementedError
+
+    def to_pandas(self, start=0, end=None, chunk_size=None, max_chunks=None):
+        start = start or self.start
+        end = end or self.end
+        chunk_size = chunk_size or self.chunk_size
+        max_chunks = max_chunks or self.max_chunks
+
+        if not chunk_size or not max_chunks:  # One shot load, suitable for small zarr files
+            df = zarr.load(self.root.joinpath(self.zarr_path).as_posix()).get(self.field)
+            df = df[start:end]
+            df = map(self.parse, df)
+        else:  # Chunked load, suitable for large zarr files
+            df = []
+            with zarr.open(self.root.joinpath(self.zarr_path).as_posix(), "r") as zf:
+                end = start + max_chunks * chunk_size if end is None else min(end, start + max_chunks * chunk_size)
+                for i_start in range(start, end, chunk_size):
+                    items = zf[self.field][i_start: min(i_start + chunk_size, end)]
+                    items = map(self.parse, items)
+                    df.append(items)
+            df = it.chain(*df)
+
+        df = pd.DataFrame.from_records(df)
+        for col, col_dtype in self.dtypes.items():
+            df[col] = df[col].astype(col_dtype, copy=False)
+        return df
+
+class AgentParser(BaseParser):
+    field = "agents"
+
+    @staticmethod
+    def parse(agent):
+        frame_dict = {
+            'centroid_x': agent[0][0],
+            'centroid_y': agent[0][1],
+            'extent_x': agent[1][0],
+            'extent_y': agent[1][1],
+            'extent_z': agent[1][2],
+            'yaw': agent[2],
+            "velocity_x": agent[3][0],
+            "velocity_y": agent[3][1],
+            "track_id": agent[4],
+        }
+        for p_label, p in zip(PERCEPTION_LABELS, agent[5]):
+            frame_dict["{}".format(p_label)] = p
+        return frame_dict
+
+    def to_pandas(self, start=0, end=None, chunk_size=None, max_chunks=None, frame=None):
+        if frame is not None:
+            start = int(frame.agent_index_interval_start)
+            end = int(frame.agent_index_interval_end)
+
+        df = super().to_pandas(start=start, end=end, chunk_size=chunk_size, max_chunks=max_chunks)
+        return df
+
+ap = AgentParser()
+agents_df = ap.to_pandas(frame=None)
+agents_df.head()
+agents_df.columns
+# Agents EDA
+agents_df.describe()
+agents_df.shape
+agents_df.info()
+agents_labels = [agents_df.CAR.sum(), agents_df.PEDESTRIAN.sum(), agents_df.CYCLIST.sum()]
+colormap = plt.cm.magma
+corr_matrix = ["centroid_x", "centroid_y", "extent_x", "extent_y", "extent_z", "yaw", 'velocity_x', 'velocity_y', "CAR","PEDESTRIAN","CYCLIST"  ]
+plt.figure(figsize=(20,20));
+plt.title('Pearson correlation of features', y=1.0, size=14);
+sns.heatmap(agents_df[corr_matrix].corr(),linewidths=0.1,vmax=1.0, square=True, cmap=colormap, linecolor='white', annot=True)
+sns.scatterplot(agents_df["centroid_x"],agents_df["centroid_y"])
+
+
+
+agents_CPC_df = agents_df.loc[((agents_df.CAR>= 0.5)|(agents_df.PEDESTRIAN>= 0.5)|(agents_df.CYCLIST>= 0.5))]
+agents_CPC_df.info()
+
+agents_CPC_df.centroid_x.idxmax()
+
+
+colormap = plt.cm.magma
+corr_matrix = ["centroid_x", "centroid_y", "extent_x", "extent_y", "extent_z", "yaw", 'velocity_x', 'velocity_y', "CAR","PEDESTRIAN","CYCLIST"  ]
+plt.figure(figsize=(20,20));
+plt.title('Pearson correlation of features', y=1.0, size=14);
+sns.heatmap(agents_CPC_df[corr_matrix].corr(),linewidths=0.1,vmax=1.0, square=True, cmap=colormap, linecolor='white', annot=True)
+
+
+agents_CAR_df = agents_df.loc[((agents_df.CAR>= 0.5))]
+agents_CAR_df.info()
+
+colormap = plt.cm.magma
+corr_matrix = ["centroid_x", "centroid_y", "extent_x", "extent_y", "extent_z", "yaw", 'velocity_x', 'velocity_y']
+plt.figure(figsize=(20,20));
+plt.title('Pearson correlation of features', y=1.0, size=14);
+sns.heatmap(agents_CAR_df[corr_matrix].corr(),linewidths=0.1,vmax=1.0, square=True, cmap=colormap, linecolor='white', annot=True)
 
 
