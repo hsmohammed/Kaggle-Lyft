@@ -4,6 +4,10 @@ Starting 24.08.2020 we are hosting a [Kaggle competition](https://www.kaggle.com
 This page serves as introduction point for it and gives additional information.
 
 # Scoring
+The goal of this competition is to predict the trajectories of other traffic participants. You can employ uni-modal models yielding a single prediction per sample, or multi-modal ones generating multiple hypotheses (up to 3) - further described by a confidence vector.
+
+Due to the high amount of multi-modality and ambiguity in traffic scenes, the used evaluation metric to score this competition is tailored to account for multiple predictions.
+
 When taking part in the competition, you will be asked to submit predictions for a private test set (no ground truth is available),
 and your solutions will be scored by Kaggle. Overall 30.000 USD as prizes are available!
 As traffic scenes can contain a large amount of ambiguity and uncertainty, we encourage the submission of multi-modal predictions.
@@ -57,3 +61,18 @@ ADE is the average displacement error (L2 distance between prediction and ground
 reports the final displacement error (L2 distance between prediction and ground truth, evaluated only at the last timestep).
 As we consider multiple predictions, we offer [implementations for both these metrics](https://github.com/lyft/l5kit/blob/os/add_competition_documentation/l5kit/l5kit/evaluation/metrics.py) either averaging over all hypotheses 
 or using the best hypothesis (oracle variant) - ignoring generated confidence scores in both cases.
+
+# Submission File
+Note: if you're using L5Kit, we provide a [function](https://github.com/lyft/l5kit/blob/20ab033c01610d711c3d36e1963ecec86e8b85b6/l5kit/l5kit/evaluation/csv_utils.py#L140) to directly convert your predictions (single and multi-modal) into a valid CSV.
+
+Every agent is identified by its `track_id` and its `timestamp`. Each trajectory holds 50 2D (X,Y) predictions.
+You can predict up to 3 trajectories for each agent in the test set. Because the format is a CSV file, all 3 trajectories fields must have a value, even if your prediction is single-modal. However, each one of the three trajectory has its own confidence, and you can set it 0 to completely ignore one or more trajectories during evaluation. The 3 confidences must sum to 1.
+
+An example of a valid CSV header:
+
+```
+timestamp, track_id, conf_0, conf_1, conf_2, coord_x00,
+coord_y_00,...,coord_x049, coord_y_049, coord_x10,
+coord_y_10,...,coord_x149, coord_y_149, coord_x20,
+coord_y_20,...,coord_x249, coord_y_249
+```
