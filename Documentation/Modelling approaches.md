@@ -1,12 +1,11 @@
-1- Reinforcement Learning models
-  a-
-  b-
-  c-
+# Reinforcement Learning models
+ # a-
+ # b-
+ # c-
 
 
-
-2- Supervised Learning models
-  a-
-  b-
-  c-
+# Supervised Learning models
+  # a-
+  # b-
+  # c-
 
