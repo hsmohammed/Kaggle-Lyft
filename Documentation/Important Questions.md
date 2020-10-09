@@ -1,6 +1,6 @@
   
 # What are the factors affecting car/driver movements?
-  1- car charachteristics
+  # 1- car charachteristics
     a- location
     b- vleocity
   2-Traffic signals, signs, and marking.
