@@ -1,9 +1,6 @@
 # Reinforcement Learning models
- # a-
- # b-
- # c-
-
-
+ # a- Inverse RL
+ 
 # Supervised Learning models
   # a- Spatio-Temporal Models
   # b- RNN (e.g. LSTM)
