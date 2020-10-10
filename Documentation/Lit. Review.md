@@ -11,6 +11,7 @@ https://arxiv.org/pdf/1808.05819v1.pdf
 
 # Books
 Predicting Vehicle Trajectory 1st Edition by Cesar Barrios (Author), Yuichi Motai (Author)
+
 Incremental Learning for Motion Prediction of Pedestrians and Vehicles by Alejandro Dizan Vasquez Govea
 # Projects
 https://github.com/openai/multiagent-particle-envs
