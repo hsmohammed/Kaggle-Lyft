@@ -5,7 +5,7 @@
 
 
 # Supervised Learning models
-  # a-
-  # b-
+  # a- Spatio-Temporal Models
+  # b-RNN (e.g. LSTM)
   # c-
 
