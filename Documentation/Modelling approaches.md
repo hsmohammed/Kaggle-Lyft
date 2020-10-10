@@ -6,6 +6,6 @@
 
 # Supervised Learning models
   # a- Spatio-Temporal Models
-  # b-RNN (e.g. LSTM)
-  # c-
+  # b- RNN (e.g. LSTM)
+  # c- Kalman Filters
 
