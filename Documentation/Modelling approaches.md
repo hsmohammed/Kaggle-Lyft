@@ -8,4 +8,8 @@
   # d- Deep Convolutional Networks (e.g. UBER Study)
   # e- Maneuver-based models such as, Hidden Markov Modelling, possibly with Bayesian Networks(hint:dependency)
   # f- Gaussian Process (GP) regression
+# INPUT
+ # a- rasterized data and state data
+ # b- tabular data variables?
+ # c- shift, rotation, etc.
 
