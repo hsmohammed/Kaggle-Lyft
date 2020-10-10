@@ -2,8 +2,12 @@
 
 
 # Articles/papers
+
+motion prediction papers collection
 https://paperswithcode.com/task/trajectory-prediction#:~:text=Trajectory%20Prediction%20is%20the%20problem,rickshaws%2C%20and%20animals%2C%20etc.
 
+UBER motion prediction paper
+https://arxiv.org/pdf/1808.05819v1.pdf
 
 # Books
 
