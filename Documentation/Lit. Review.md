@@ -9,6 +9,9 @@ https://paperswithcode.com/task/trajectory-prediction#:~:text=Trajectory%20Predi
 UBER motion prediction paper
 https://arxiv.org/pdf/1808.05819v1.pdf
 
+2019 competition winner
+https://arxiv.org/pdf/1911.08568.pdf ***
+
 # Books
 Predicting Vehicle Trajectory 1st Edition by Cesar Barrios (Author), Yuichi Motai (Author)
 
