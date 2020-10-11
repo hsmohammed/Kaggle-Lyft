@@ -25,5 +25,8 @@ https://colah.github.io/posts/2015-08-Understanding-LSTMs/
 
 http://karpathy.github.io/2015/05/21/rnn-effectiveness/
 
+Similar 2019 Competition
+https://www.aicrowd.com/challenges/iccv-2019-learning-to-drive-challenge
+
 
 
