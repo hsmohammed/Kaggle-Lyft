@@ -3,14 +3,17 @@
 
 # Articles/papers
 
-motion prediction papers collection
+* motion prediction papers collection
 https://paperswithcode.com/task/trajectory-prediction#:~:text=Trajectory%20Prediction%20is%20the%20problem,rickshaws%2C%20and%20animals%2C%20etc.
 
-UBER motion prediction paper
+* UBER motion prediction paper
 https://arxiv.org/pdf/1808.05819v1.pdf
 
-2019 competition winner
+* 2019 competition winner
 https://arxiv.org/pdf/1911.08568.pdf ***
+* GAN Model
+https://arxiv.org/pdf/1806.01482.pdf **
+
 
 # Books
 Predicting Vehicle Trajectory 1st Edition by Cesar Barrios (Author), Yuichi Motai (Author)
