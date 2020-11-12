@@ -87,6 +87,7 @@ zarr_dataset.open()
 print(zarr_dataset)
 
 
+cfg2 = omegaconf.DictConfig(cfg2)
 
 
 frames = zarr_dataset.frames
@@ -323,3 +324,25 @@ plt.title('Pearson correlation of features', y=1.0, size=14);
 sns.heatmap(agents_CAR_df[corr_matrix].corr(),linewidths=0.1,vmax=1.0, square=True, cmap=colormap, linecolor='white', annot=True)
 
 
+
+import numpy as np
+a = np.array([1,2,3,4])
+a.shape
+import time
+a = np.random.rand(1000000)
+b = np.random.rand(1000000)
+tic = time.time()
+c = np.dot(a,b)
+toc = time.time()
+print(f'vectorized ver.: {str(1000*(toc-tic))} ms')
+
+
+
+c = 0
+tic = time.time()
+for i in range(1000000):
+    c+=a[i]*b[i]
+toc = time.time()
+print(f'vectorized ver.: {str(1000*(toc-tic))} ms')
+
+a.reshape(4,1)
